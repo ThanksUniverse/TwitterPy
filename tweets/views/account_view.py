@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login  
 from django.shortcuts import render, redirect  
 from django.contrib import messages  
+from tweets.models import UserProfile
 
 def login_view(request):  
     if request.method == 'POST':  
