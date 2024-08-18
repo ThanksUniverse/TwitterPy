@@ -12,6 +12,7 @@ pillow = "^10.4.0"
 django-crispy-forms = "^2.3"
 crispy-bootstrap4 = "^2024.1"
 psycopg2-binary = "^2.9.9"
+gitpython = "^3.1.43"
 
 
 [build-system]
