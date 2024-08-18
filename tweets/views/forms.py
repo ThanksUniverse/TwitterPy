@@ -5,7 +5,7 @@ from tweets.models import UserProfile
 class TweetForm(forms.ModelForm):  
     class Meta:  
         model = Tweet  
-        fields = ['content']  # Inclua apenas o campo 'content'
+        fields = ['content'] 
 
 class UserProfileForm(forms.ModelForm):
     birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
