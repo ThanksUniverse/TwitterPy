@@ -21,13 +21,17 @@
                 {% for tweet in tweets %}
                     <div class="tweet-card">
                         <div class="tweet-header">
-                            {% if tweet.user.userprofile.profile_image %}
-                                <img src="{{ tweet.user.userprofile.profile_image.url }}" alt="{{ tweet.user.username }}" class="profile-img">
-                            {% else %}
-                                <i class="fas fa-user-circle profile-img-default"></i>
-                            {% endif %}
+                            <a href="{% url 'user_profile' tweet.user.username %}">
+                                {% if tweet.user.userprofile.profile_image %}
+                                    <img src="{{ tweet.user.userprofile.profile_image.url }}" alt="{{ tweet.user.username }}" class="profile-img">
+                                {% else %}
+                                    <i class="fas fa-user-circle profile-img-default"></i>
+                                {% endif %}
+                            </a>
                             <div>
-                                <strong>{{ tweet.user.username }}</strong>
+                                <a href="{% url 'user_profile' tweet.user.username %}" class="user-profile-link">
+                                    <strong>{{ tweet.user.username }}</strong>
+                                </a>
                                 <div class="tweet-timestamp">{{ tweet.created_at|date:"d/m/Y H:i" }}</div>
                             </div>
                         </div>
@@ -123,6 +127,15 @@
             font-size: 40px;
             color: #1DA1F2;
             margin-right: 10px;
+        }
+
+        .user-profile-link {
+            color: #1DA1F2;
+            text-decoration: none;
+        }
+
+        .user-profile-link:hover {
+            text-decoration: underline;
         }
 
         .tweet-content {
