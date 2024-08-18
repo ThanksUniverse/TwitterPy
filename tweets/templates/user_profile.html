@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Perfil de {{ user_profile.user.username }}{% endblock %}
+
+{% block content %}
+    <div class="profile">
+        <div class="profile-header">
+            {% if user_profile.profile_image %}
+                <img src="{{ user_profile.profile_image.url }}" alt="{{ user_profile.user.username }}" class="profile-img">
+            {% else %}
+                <i class="fas fa-user-circle profile-img-default"></i>
+            {% endif %}
+            <div class="profile-info">
+                <h1>{{ user_profile.user.username }}</h1>
+                <p>{% if user_profile.bio %}{{ user_profile.bio }}{% else %}Bio:{% endif %}</p>
+                <p>{% if user_profile.location %}Localização: {{ user_profile.location }}{% else %}Localização:{% endif %}</p>
+                <p>{% if user_profile.website %}<a href="{{ user_profile.website }}" target="_blank">{{ user_profile.website }}</a>{% else %}Website:{% endif %}</p>
+                <p>Nascido em: {% if user_profile.birth_date %}{{ user_profile.birth_date|date:"d/m/Y" }}{% endif %}</p>
+
+                {% if not is_owner %}
+                    <form method="post" action="{% url 'follow_user' username=user_profile.user.username %}">
+                        {% csrf_token %}
+                        {% if is_following %}
+                            <button type="submit" class="btn btn-secondary">Seguindo</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary">Seguir</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if is_owner %}
+            <h2>Editar Perfil</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </form>
+        {% endif %}
+
+        <h2>Tweets de {{ user_profile.user.username }}</h2>
+        <div class="tweets-list">
+            {% for tweet in tweets %}
+                <div class="tweet">
+                    <p class="content">{{ tweet.content }}</p>
+                    <p class="timestamp">{{ tweet.created_at|date:"d/m/Y H:i" }}</p>
+                    {% if is_owner %}
+                        <form method="post" action="{% url 'delete_tweet' tweet.id %}" onsubmit="return confirm('Você tem certeza que deseja deletar este tweet?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Deletar</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 2px solid #1DA1F2;
+        }
+        .profile-img-default {
+            font-size: 120px;
+            color: #1DA1F2;
+            margin-right: 20px;
+        }
+        .profile-info h1 {
+            margin: 0;
+            font-size: 32px;
+            color: #1DA1F2;
+        }
+        .profile-info p {
+            margin: 5px 0;
+            color: #657786;
+        }
+        .tweets-list .tweet {
+            padding: 15px;
+            border-bottom: 1px solid #E1E8ED;
+            background-color: #FFF;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tweets-list .tweet .content {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .tweets-list .tweet .timestamp {
+            font-size: 12px;
+            color: #657786;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #1DA1F2;
+        }
+        .btn {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0d8bcf;
+        }
+        .btn-secondary {
+            background-color: #657786;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #525a61;
+        }
+        .btn-danger {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #e60000;
+        }
+    </style>
+{% endblock %}

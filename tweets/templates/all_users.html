@@ -1,0 +1,65 @@
+<style>
+    .search-form {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        width: 100%;
+        max-width: 400px;
+        padding: 10px;
+        border: 2px solid #1DA1F2;
+        border-radius: 50px 0 0 50px;
+        font-size: 16px;
+        outline: none;
+        transition: border-color 0.3s ease;
+    }
+
+    .search-input:focus {
+        border-color: #0d8bcf;
+    }
+
+    .search-btn {
+        padding: 10px 20px;
+        background-color: #1DA1F2;
+        border: none;
+        border-radius: 0 50px 50px 0;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        outline: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-btn:hover {
+        background-color: #0d8bcf;
+    }
+
+    .search-btn i {
+        margin-right: 5px;
+    }
+</style>
+
+{% extends 'base.html' %}
+
+{% block title %}Usuários{% endblock %}
+
+{% block content %}
+    <h1>Todos os Usuários</h1>
+
+    <form method="get" action="{% url 'all_users' %}" class="search-form">
+        <input type="text" name="q" placeholder="Buscar usuários..." value="{{ query|default:'' }}" class="search-input">
+        <button type="submit" class="search-btn"><i class="fas fa-search"></i> Pesquisar</button>
+    </form>
+
+    <ul class="users-list">
+        {% for user in users %}
+            <li><a href="{% url 'user_profile' username=user.username %}">{{ user.username }}</a></li>
+        {% endfor %}
+    </ul>
+
+    {% if not users %}
+        <p>Nenhum usuário encontrado.</p>
+    {% endif %}
+{% endblock %}

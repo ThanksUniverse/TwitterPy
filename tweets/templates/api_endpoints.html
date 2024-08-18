@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}API Endpoints{% endblock %}
+
+{% block content %}
+    <div class="api-container">
+        <h1>API Endpoints</h1>
+        <ul>
+            {% for name, url in endpoints.items %}
+                <li><strong>{{ name }}:</strong> <a href="{{ url }}">{{ url }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <style>
+        .api-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .api-container h1 {
+            color: #1DA1F2;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .api-container ul {
+            list-style: none;
+            padding: 0;
+        }
+        .api-container li {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}

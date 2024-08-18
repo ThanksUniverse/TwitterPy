@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Feed{% endblock %}
+
+{% block content %}
+    <div class="feed-container">
+        <div class="create-tweet-container">
+            <h2>Criar Tweet</h2>
+            <form method="post" class="create-tweet-form">
+                {% csrf_token %}
+                {{ form.content }}
+                <button type="submit" class="btn btn-primary">Tweetar</button>
+            </form>
+        </div>
+
+        <hr>
+
+        <div class="tweet-feed-container">
+            {% if tweets %}
+                {% for tweet in tweets %}
+                    <div class="tweet-card">
+                        <div class="tweet-header">
+                            {% if tweet.user.userprofile.profile_image %}
+                                <img src="{{ tweet.user.userprofile.profile_image.url }}" alt="{{ tweet.user.username }}" class="profile-img">
+                            {% else %}
+                                <i class="fas fa-user-circle profile-img-default"></i>
+                            {% endif %}
+                            <div>
+                                <strong>{{ tweet.user.username }}</strong>
+                                <div class="tweet-timestamp">{{ tweet.created_at|date:"d/m/Y H:i" }}</div>
+                            </div>
+                        </div>
+                        <div class="tweet-content">{{ tweet.content }}</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-tweets">Você ainda não está seguindo ninguém.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <style>
+        .feed-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .create-tweet-container {
+            margin-bottom: 30px;
+        }
+
+        .create-tweet-container h2 {
+            color: #1DA1F2;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .create-tweet-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .create-tweet-form textarea {
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #E1E8ED;
+            border-radius: 10px;
+            resize: none;
+            font-size: 16px;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0d8bcf;
+        }
+
+        .tweet-feed-container {
+            margin-top: 30px;
+        }
+
+        .tweet-card {
+            padding: 15px;
+            border-bottom: 1px solid #E1E8ED;
+            background-color: #F5F8FA;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tweet-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .profile-img-default {
+            font-size: 40px;
+            color: #1DA1F2;
+            margin-right: 10px;
+        }
+
+        .tweet-content {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        .tweet-timestamp {
+            font-size: 12px;
+            color: #657786;
+        }
+
+        .no-tweets {
+            text-align: center;
+            color: #657786;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
