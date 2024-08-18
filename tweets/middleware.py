@@ -9,6 +9,6 @@ class RequireLoginMiddleware:
             return redirect('register')
         if request.user.is_authenticated and request.path in ['/accounts/login/', '/accounts/register/']:
             return redirect('home')
-        if request.path in ['/hello/', '/update_server/']:
+        if request.path in ['/hello/', '/update_server/', 'api/endpoints/']:
             return self.get_response(request)
         return self.get_response(request)
