@@ -10,6 +10,7 @@ from django.conf.urls.static import static
 from tweets.views.follow_user_view import follow_user
 from tweets.views.api_endpoints import api_endpoints
 from tweets.views.delete_tweet_view import delete_tweet
+from tweets.views.pythonanywhere_view import update_server, hello_world
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -24,5 +25,7 @@ urlpatterns = [
     path('seguir/<str:username>/', follow_user, name='follow_user'),
     path('tweet/delete/<int:tweet_id>/', delete_tweet, name='delete_tweet'),
     path('api/endpoints/', api_endpoints, name='api_endpoints'),
+    path('update_server/', update_server, name='update_server'),
+    path("hello/", hello_world, name="hello_world"),
     path('', home_view, name='home'),   
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
