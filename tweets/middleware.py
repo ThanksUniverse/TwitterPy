@@ -5,7 +5,7 @@ class RequireLoginMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path in ['/hello/', '/update_server/', 'api/endpoints/']:
+        if request.path in ['/hello/', '/update_server/', '/api/endpoints/']:
             return self.get_response(request)
         if not request.user.is_authenticated and request.path not in ['/accounts/login/', '/accounts/register/']:
             return redirect('register')
