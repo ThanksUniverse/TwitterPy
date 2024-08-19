@@ -83,16 +83,27 @@ WSGI_APPLICATION = "core.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'alt0b011$dbdev',  
-        'USER': 'alt0b011',  
-        'PASSWORD': 'IncreadibleStrongPassword12321!',  
-        'HOST': 'alt0b011.mysql.pythonanywhere-services.com',
-        'PORT': '3306',  
+import sys
+
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db_test.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'alt0b011$dbdev',  
+            'USER': 'alt0b011',  
+            'PASSWORD': 'IncreadibleStrongPassword12321!',  
+            'HOST': 'alt0b011.mysql.pythonanywhere-services.com',
+            'PORT': '3306',  
+        }
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.urls import reverse
 from tweets.models import Tweet, UserProfile
 
 class TweetTestCase(TestCase):
@@ -21,3 +22,51 @@ class TweetTestCase(TestCase):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Este é um tweet de teste")
+
+    def test_user_registration(self):
+        response = self.client.post(reverse('register'), {
+            'username': 'newuser',
+            'email': 'newuser@example.com',
+            'password': 'newpass',
+            'confirm_password': 'newpass',
+        })
+        self.assertEqual(response.status_code, 302)  
+
+        new_user = User.objects.filter(username='newuser').exists()
+        self.assertTrue(new_user)
+
+        new_user_profile = UserProfile.objects.filter(user__username='newuser').exists()
+        self.assertTrue(new_user_profile)
+
+    def test_user_login(self):
+        self.client.logout()  
+        response = self.client.post(reverse('login'), {
+            'username': 'testuser',
+            'password': 'testpass'
+        })
+        self.assertEqual(response.status_code, 302)  
+
+        user = User.objects.get(username='testuser')
+        self.assertTrue(user.is_authenticated)
+
+    def test_user_login_with_invalid_credentials(self):
+        self.client.logout()  
+        response = self.client.post(reverse('login'), {
+            'username': 'testuser',
+            'password': 'wrongpass'
+        })
+        self.assertEqual(response.status_code, 200)  
+        self.assertContains(response, 'Credenciais inválidas')
+
+    def test_duplicate_user_registration(self):
+        response = self.client.post(reverse('register'), {
+            'username': 'testuser',
+            'email': 'testuser@example.com',
+            'password': 'newpass',
+            'confirm_password': 'newpass',
+        })
+        self.assertEqual(response.status_code, 302)  # Agora esperamos um redirecionamento
+
+        messages = list(response.wsgi_request._messages)
+        self.assertTrue(any("Usuário já existe" in str(message) for message in messages))
+
