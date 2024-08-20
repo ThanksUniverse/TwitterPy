@@ -91,11 +91,11 @@
 		{% for tweet in tweets %}
 		<div class="tweet">
 			<div class="tweet-content">
-				<p>{{ tweet.content }}</p>
+				<p>{{ tweet.content|linebreaksbr }}</p>
 				{% if tweet.image %}
 				<img src="{{ tweet.image.url }}" alt="Tweet image" class="tweet-img" />
 				{% endif %}
-				<p class="timestamp">{{ tweet.created_at|date:"d/m/Y H:i" }}</p>
+				<p class="timestamp">{{ tweet.created_at_utc3|date:"d/m/Y H:i" }}</p>
 			</div>
 			{% if is_owner %}
 			<form method="post" action="{% url 'delete_tweet' tweet.id %}" onsubmit="return confirm('Você tem certeza que deseja deletar este tweet?');">

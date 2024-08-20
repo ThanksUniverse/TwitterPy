@@ -46,7 +46,7 @@
                             <a href="{% url 'user_profile' tweet.user.username %}" class="user-profile-link">
                                 <strong>{{ tweet.user.username }}</strong>
                             </a>
-                            <div class="tweet-timestamp">{{ tweet.created_at|date:"d/m/Y H:i" }}</div>
+                            <div class="tweet-timestamp">{{ tweet.created_at_utc3|date:"d/m/Y H:i" }}</div>
                         </div>
                     </div>
 

@@ -5,7 +5,13 @@ from tweets.models import UserProfile
 class TweetForm(forms.ModelForm):  
     class Meta:  
         model = Tweet  
-        fields = ['content', 'image'] 
+        fields = ['content', 'image']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'placeholder': '...',
+                'rows': 4,
+            }),
+        }
 
     image = forms.ImageField(required=False)  
 

@@ -1,5 +1,7 @@
-from django.db import models  
-from django.contrib.auth.models import User  
+from django.utils import timezone
+import pytz
+from django.db import models
+from django.contrib.auth.models import User
 
 class Tweet(models.Model):  
     user = models.ForeignKey(User, on_delete=models.CASCADE)  
@@ -13,3 +15,8 @@ class Tweet(models.Model):
 
     def total_likes(self):
         return self.likes.count()
+
+    @property
+    def created_at_utc3(self):
+        utc3 = pytz.timezone('America/Sao_Paulo')
+        return timezone.localtime(self.created_at, utc3)
