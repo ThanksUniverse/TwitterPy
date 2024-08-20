@@ -13,30 +13,21 @@
             padding: 0;  
         }  
         .navbar {  
-            background-color: #1DA1F2;  
-            padding: 15px;  
+            background: linear-gradient(135deg, #1DA1F2 0%, #0D95E8 100%);
+            padding: 15px 30px;
             display: flex;  
             justify-content: space-between;  
             align-items: center;  
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  
+            position: relative;
+            z-index: 10;
         }  
         .navbar .logo {  
-            font-size: 24px;  
+            font-size: 28px;  
             font-weight: bold;  
             color: white;  
-        }  
-        .navbar .user-info {  
-            color: white;  
-            display: flex;  
-            align-items: center;  
-        }  
-        .navbar .user-info i {  
-            margin-right: 10px;  
-        }  
-        .navbar .user-info a {  
-            color: white;  
-            text-decoration: none;  
-            margin-left: 15px;  
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }  
         .navbar .menu {  
             display: flex;  
@@ -45,7 +36,33 @@
         .navbar .menu a {  
             color: white;  
             text-decoration: none;  
-            margin: 0 10px;  
+            margin: 0 15px;  
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }  
+        .navbar .menu a:hover {  
+            color: #A9D2F3;
+        }  
+        .navbar .user-info {  
+            color: white;  
+            display: flex;  
+            align-items: center;  
+        }  
+        .navbar .user-info i {  
+            margin-right: 10px;  
+            font-size: 24px;
+        }  
+        .navbar .user-info a {  
+            color: white;  
+            text-decoration: none;  
+            margin-left: 15px;  
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }  
+        .navbar .user-info a:hover {  
+            color: #A9D2F3;
         }  
         .container {  
             max-width: 800px;  
@@ -74,7 +91,10 @@
         .tweet .timestamp {  
             font-size: 12px;  
             color: #657786;  
-        }  
+        }
+        .text-danger {
+            color: #dc3545;
+        }
         .users-list {  
             list-style: none;  
             padding: 0;  
@@ -85,7 +105,33 @@
         }  
         .users-list li:last-child {  
             border-bottom: none;  
-        }  
+        }
+        /* Responsividade para mobile */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 20px;
+            }
+            .navbar .logo {
+                margin-bottom: 10px;
+            }
+            .navbar .menu {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar .menu a {
+                margin: 5px 0;
+            }
+            .navbar .user-info {
+                margin-top: 10px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar .user-info a {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+        }
     </style>  
 </head>  
 <body>  
@@ -101,13 +147,15 @@
         <div class="user-info">
             {% if user.is_authenticated %}
                 <i class="fas fa-user-circle"></i>
-                <a href="{% url 'user_profile' username=user.username %}" style="color: white; text-decoration: none;">
+                <a href="{% url 'user_profile' username=user.username %}">
                     <span>Olá, {{ user.username }}</span>
                 </a>
                 <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
                     {% csrf_token %}
                 </form>
-                <a href="#" onclick="document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                <a href="#" onclick="document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </a>
             {% else %}
                 <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
             {% endif %}

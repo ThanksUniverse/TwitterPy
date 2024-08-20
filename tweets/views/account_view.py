@@ -28,17 +28,14 @@ def register_view(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
 
-        # Verifica se o usuário já existe
         if User.objects.filter(username=username).exists():
             messages.error(request, "Usuário já existe. Tente fazer login.")
-            return redirect('login')  # Redireciona para a página de login
+            return redirect('login')  
 
         if password == confirm_password:
-            # Cria o usuário
             user = User.objects.create_user(username=username, email=email, password=password)
             user.save()
 
-            # Verifica se o perfil já existe antes de criar
             if not UserProfile.objects.filter(user=user).exists():
                 UserProfile.objects.create(user=user)
 

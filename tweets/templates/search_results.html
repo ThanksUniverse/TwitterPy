@@ -1,3 +1,106 @@
+<style>
+    .search-form {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        width: 100%;
+        max-width: 400px;
+        padding: 10px;
+        border: 2px solid #1DA1F2;
+        border-radius: 50px 0 0 50px;
+        font-size: 16px;
+        outline: none;
+        transition: border-color 0.3s ease;
+    }
+
+    .search-input:focus {
+        border-color: #0d8bcf;
+    }
+
+    .search-btn {
+        padding: 10px 20px;
+        background-color: #1DA1F2;
+        border: none;
+        border-radius: 0 50px 50px 0;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        outline: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-btn:hover {
+        background-color: #0d8bcf;
+    }
+
+    .search-btn i {
+        margin-right: 5px;
+    }
+
+    .users-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .users-list li {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .users-list li:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .user-profile-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin-right: 20px;
+        object-fit: cover;
+    }
+
+    .user-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-profile-link {
+        color: #1DA1F2;
+        font-size: 20px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .user-profile-link:hover {
+        color: #0d8bcf;
+    }
+
+    .no-users {
+        text-align: center;
+        color: #657786;
+        font-size: 18px;
+        margin-top: 20px;
+    }
+</style>
+
 {% extends 'base.html' %}
 
 {% block title %}Resultados da Busca{% endblock %}
@@ -6,7 +109,22 @@
     <h1>Resultados da Busca por "{{ query }}"</h1>
     <ul class="users-list">
         {% for user in users %}
-            <li><a href="{% url 'user_profile' username=user.username %}">{{ user.username }}</a></li>
+            <li>
+                <a href="{% url 'user_profile' username=user.username %}">
+                    {% if user.userprofile.profile_image %}
+                        <img src="{{ user.userprofile.profile_image.url }}" alt="{{ user.username }}" class="user-profile-img">
+                    {% else %}
+                        <i class="fas fa-user-circle user-profile-img-default"></i>
+                    {% endif %}
+                </a>
+                <div class="user-details">
+                    <a href="{% url 'user_profile' username=user.username %}" class="user-profile-link">{{ user.username }}</a>
+                </div>
+            </li>
         {% endfor %}
     </ul>
+
+    {% if not users %}
+        <p class="no-users">Nenhum usuário encontrado.</p>
+    {% endif %}
 {% endblock %}

@@ -39,6 +39,66 @@
     .search-btn i {
         margin-right: 5px;
     }
+
+    .users-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .users-list li {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .users-list li:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .user-profile-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin-right: 20px;
+        object-fit: cover;
+    }
+
+    .user-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-profile-link {
+        color: #1DA1F2;
+        font-size: 20px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .user-profile-link:hover {
+        color: #0d8bcf;
+    }
+
+    .no-users {
+        text-align: center;
+        color: #657786;
+        font-size: 18px;
+        margin-top: 20px;
+    }
 </style>
 
 {% extends 'base.html' %}
@@ -55,7 +115,18 @@
 
     <ul class="users-list">
         {% for user in follows %}
-            <li><a href="{% url 'user_profile' username=user.user.username %}">{{ user.user.username }}</a></li>
+            <li>
+                <a href="{% url 'user_profile' username=user.user.username %}">
+                    {% if user.user.userprofile.profile_image %}
+                        <img src="{{ user.user.userprofile.profile_image.url }}" alt="{{ user.user.username }}" class="user-profile-img">
+                    {% else %}
+                        <i class="fas fa-user-circle user-profile-img-default"></i>
+                    {% endif %}
+                </a>
+                <div class="user-details">
+                    <a href="{% url 'user_profile' username=user.user.username %}" class="user-profile-link">{{ user.user.username }}</a>
+                </div>
+            </li>
         {% endfor %}
     </ul>
 

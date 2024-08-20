@@ -11,6 +11,7 @@ from tweets.views.follow_user_view import follow_user
 from tweets.views.api_endpoints import api_endpoints
 from tweets.views.delete_tweet_view import delete_tweet
 from tweets.views.pythonanywhere_view import update, hello_world
+from tweets.views.like_tweet import like_tweet
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -24,6 +25,7 @@ urlpatterns = [
     path('buscar/', search_users, name='search_users'),
     path('seguir/<str:username>/', follow_user, name='follow_user'),
     path('tweet/delete/<int:tweet_id>/', delete_tweet, name='delete_tweet'),
+    path('like/<int:tweet_id>/', like_tweet, name='like_tweet'),
     path('api/endpoints/', api_endpoints, name='api_endpoints'),
     path('update_server/', update, name='update_server'),
     path("hello/", hello_world, name="hello_world"),

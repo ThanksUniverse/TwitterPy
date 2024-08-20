@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
 from tweets.models import Tweet, UserProfile
+from django.core.files.uploadedfile import SimpleUploadedFile
+import os
 
 class TweetTestCase(TestCase):
 
@@ -13,6 +15,21 @@ class TweetTestCase(TestCase):
     def test_tweet_creation(self):
         self.assertEqual(self.tweet.content, "Este é um tweet de teste")
         self.assertEqual(self.tweet.user.username, 'testuser')
+
+    def test_like_tweet(self):
+        self.client.login(username='testuser', password='testpass')
+        response = self.client.post(reverse('like_tweet', args=[self.tweet.id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.tweet.likes.count(), 1)
+        self.assertIn(self.user, self.tweet.likes.all())
+
+    def test_unlike_tweet(self):
+        self.tweet.likes.add(self.user)
+        self.client.login(username='testuser', password='testpass')
+        response = self.client.post(reverse('like_tweet', args=[self.tweet.id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.tweet.likes.count(), 0)
+        self.assertNotIn(self.user, self.tweet.likes.all())
 
     def test_user_profile_creation(self):
         self.assertEqual(self.user_profile.user.username, 'testuser')
@@ -65,8 +82,7 @@ class TweetTestCase(TestCase):
             'password': 'newpass',
             'confirm_password': 'newpass',
         })
-        self.assertEqual(response.status_code, 302)  # Agora esperamos um redirecionamento
+        self.assertEqual(response.status_code, 302)
 
         messages = list(response.wsgi_request._messages)
         self.assertTrue(any("Usuário já existe" in str(message) for message in messages))
-

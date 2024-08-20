@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     "core",
     "tweets",
     "crispy_forms",
-    "crispy_bootstrap4"
+    "crispy_bootstrap4",
+    "widget_tweaks"
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -85,7 +86,11 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 import sys
 
-if 'test' in sys.argv:
+import socket
+hostname = socket.gethostname()
+
+#if 'test' in sys.argv:
+if hostname == 'Alt0b11' or 'test' in sys.argv:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

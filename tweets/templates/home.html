@@ -4,51 +4,118 @@
 {% block title %}Feed{% endblock %}
 
 {% block content %}
-    <div class="feed-container">
-        <div class="create-tweet-container">
-            <h2>Criar Tweet</h2>
-            <form method="post" class="create-tweet-form">
-                {% csrf_token %}
-                {{ form.content }}
-                <button type="submit" class="btn btn-primary">Tweetar</button>
-            </form>
-        </div>
-
-        <hr>
-
-        <div class="total-tweets">
-            <p>Total de tweets publicados: {{ total_tweets }}</p>
-        </div>
-
-        <hr>
-
-        <div class="tweet-feed-container">
-            {% if tweets %}
-                {% for tweet in tweets %}
-                    <div class="tweet-card">
-                        <div class="tweet-header">
-                            <a href="{% url 'user_profile' tweet.user.username %}">
-                                {% if tweet.user.userprofile.profile_image %}
-                                    <img src="{{ tweet.user.userprofile.profile_image.url }}" alt="{{ tweet.user.username }}" class="profile-img">
-                                {% else %}
-                                    <i class="fas fa-user-circle profile-img-default"></i>
-                                {% endif %}
-                            </a>
-                            <div>
-                                <a href="{% url 'user_profile' tweet.user.username %}" class="user-profile-link">
-                                    <strong>{{ tweet.user.username }}</strong>
-                                </a>
-                                <div class="tweet-timestamp">{{ tweet.created_at|date:"d/m/Y H:i" }}</div>
-                            </div>
-                        </div>
-                        <div class="tweet-content">{{ tweet.content }}</div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p class="no-tweets">{{ no_tweets_message }}</p>
-            {% endif %}
-        </div>
+<div class="feed-container">
+    <div class="create-tweet-container">
+        <h2>Criar Tweet</h2>
+        <form method="post" enctype="multipart/form-data" class="create-tweet-form">
+            {% csrf_token %}
+            {{ form.content }}
+            {{ form.image }}
+            <button type="submit" class="btn btn-primary">Tweetar</button>
+        </form>
     </div>
+
+    <hr/>
+
+    <div class="total-tweets">
+        <p>Total de tweets na plataforma: {{ total_tweets }}</p>
+    </div>
+
+    <hr />
+
+    <div class="filter-buttons">
+        <a href="?filter=feed" style="text-decoration: none;" class="btn {% if not request.GET.filter or request.GET.filter == 'feed' %}btn-selected{% endif %} ">Seu Feed</a>
+        <a href="?filter=top" style="text-decoration: none;" class="btn {% if request.GET.filter == 'top' %}btn-selected{% endif %}">Em Alta</a>
+    </div>
+
+    <hr />
+
+    <div class="tweet-feed-container">
+        {% if tweets %}
+            {% for tweet in tweets %}
+                <div class="tweet-card">
+                    <div class="tweet-header">
+                        <a href="{% url 'user_profile' tweet.user.username %}">
+                            {% if tweet.user.userprofile.profile_image %}
+                                <img src="{{ tweet.user.userprofile.profile_image.url }}" alt="{{ tweet.user.username }}" class="profile-img" />
+                            {% else %}
+                                <i class="fas fa-user-circle profile-img-default"></i>
+                            {% endif %}
+                        </a>
+                        <div>
+                            <a href="{% url 'user_profile' tweet.user.username %}" class="user-profile-link">
+                                <strong>{{ tweet.user.username }}</strong>
+                            </a>
+                            <div class="tweet-timestamp">{{ tweet.created_at|date:"d/m/Y H:i" }}</div>
+                        </div>
+                    </div>
+
+                    <div class="tweet-content">{{ tweet.content|linebreaksbr }}</div>
+
+                    {% if tweet.image %}
+                        <div class="tweet-image">
+                            <img src="{{ tweet.image.url }}" alt="Tweet image" class="tweet-img" />
+                        </div>
+                    {% endif %}
+
+                    <div class="tweet-actions">
+                        <form method="post" action="{% url 'like_tweet' tweet.id %}">
+                            {% csrf_token %}
+                            {% if user in tweet.likes.all %}
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-thumbs-down"></i> Unlike</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-thumbs-up"></i> Like</button>
+                            {% endif %}
+                        </form>
+                        <span>{{ tweet.total_likes }} likes</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-tweets">{{ no_tweets_message }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.querySelector(".create-tweet-form textarea").addEventListener("paste", function (event) {
+            let items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.kind === "file" && item.type.startsWith("image/")) {
+                    let file = item.getAsFile();
+
+                    if (file.size > 5 * 1024 * 1024) {  // 5MB limit
+                        alert("A imagem não pode exceder 5MB.");
+                        return;
+                    }
+
+                    // Limpar qualquer imagem anterior
+                    let existingImage = document.querySelector(".tweet-image-preview");
+                    if (existingImage) {
+                        existingImage.remove();
+                    }
+
+                    let reader = new FileReader();
+                    reader.onload = function (event) {
+                        let imgElement = document.createElement("img");
+                        imgElement.src = event.target.result;
+                        imgElement.className = "tweet-image-preview";
+                        imgElement.style.maxWidth = "100%";
+                        imgElement.style.borderRadius = "10px";
+                        imgElement.style.marginTop = "10px";
+
+                        document.querySelector(".create-tweet-container").appendChild(imgElement);
+
+                        // Configurar o campo de arquivo de imagem corretamente
+                        let imageField = document.querySelector('input[name="image"]');
+                        let dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        imageField.files = dataTransfer.files;  // Anexar o arquivo ao campo de input
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    </script>
 
     <style>
         .feed-container {
@@ -66,7 +133,7 @@
         }
 
         .create-tweet-container h2 {
-            color: #1DA1F2;
+            color: #1da1f2;
             font-size: 20px;
             margin-bottom: 15px;
         }
@@ -79,28 +146,77 @@
         .create-tweet-form textarea {
             min-height: 100px;
             padding: 10px;
-            border: 1px solid #E1E8ED;
+            border: 1px solid #e1e8ed;
             border-radius: 10px;
             resize: none;
             font-size: 16px;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: "Helvetica Neue", Arial, sans-serif;
             margin-bottom: 15px;
         }
 
-        .btn-primary {
-            background-color: #1DA1F2;
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+        }
+
+        .filter-buttons .btn {
+            background-color: #1da1f2;
             color: white;
             border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+
+        .filter-buttons .btn-selected {
+            background-color: #0d8bcf;
+        }
+
+        .filter-buttons .btn:hover {
+            background-color: #0d8bcf;
+        }
+
+        .btn-primary {
+            background-color: transparent;
+            color: #1da1f2;
+            border: 2px solid #1da1f2;
             padding: 10px 15px;
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
             text-align: center;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            display: flex;
+            align-items: center;
         }
 
         .btn-primary:hover {
-            background-color: #0d8bcf;
+            background-color: #1da1f2;
+            color: white;
+            border-color: #1da1f2;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
         }
 
         .tweet-feed-container {
@@ -109,8 +225,8 @@
 
         .tweet-card {
             padding: 15px;
-            border-bottom: 1px solid #E1E8ED;
-            background-color: #F5F8FA;
+            border-bottom: 1px solid #e1e8ed;
+            background-color: #f5f8fa;
             border-radius: 10px;
             margin-bottom: 15px;
         }
@@ -131,12 +247,12 @@
 
         .profile-img-default {
             font-size: 40px;
-            color: #1DA1F2;
+            color: #1da1f2;
             margin-right: 10px;
         }
 
         .user-profile-link {
-            color: #1DA1F2;
+            color: #1da1f2;
             text-decoration: none;
         }
 
@@ -147,7 +263,7 @@
         .tweet-content {
             font-size: 16px;
             margin-bottom: 10px;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: "Helvetica Neue", Arial, sans-serif;
             line-height: 1.5;
         }
 
@@ -168,6 +284,40 @@
             color: #657786;
             font-size: 16px;
             margin-bottom: 15px;
+        }
+
+        .tweet-actions {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .tweet-actions button {
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tweet-actions button i {
+            margin-right: 5px;
+        }
+
+        .tweet-actions span {
+            color: #657786;
+            font-size: 14px;
+        }
+
+        .tweet-img {
+            max-width: 100%;
+            max-height: 240px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        /* Hide input type file */
+        input[type="file"] {
+            display: none;
         }
     </style>
 {% endblock %}
