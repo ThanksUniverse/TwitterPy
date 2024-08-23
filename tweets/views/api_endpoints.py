@@ -1,3 +1,5 @@
+from django.shortcuts import render
+
 def api_endpoints(request):
     endpoints = {
         'Home': '/',
